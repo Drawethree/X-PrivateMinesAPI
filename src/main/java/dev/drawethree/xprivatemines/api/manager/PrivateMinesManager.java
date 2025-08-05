@@ -1,6 +1,7 @@
 package dev.drawethree.xprivatemines.api.manager;
 
 import dev.drawethree.xprivatemines.api.model.MineTier;
+import dev.drawethree.xprivatemines.api.model.MinesSchematic;
 import dev.drawethree.xprivatemines.api.model.PrivateMine;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -16,9 +17,10 @@ public interface PrivateMinesManager {
      * Creates a new private mine for the given player.
      *
      * @param owner the player to own the new mine
+     * @param schematic schematic that should be used
      * @return future representing the created mine
      */
-    CompletableFuture<PrivateMine> createPrivateMine(OfflinePlayer owner);
+    CompletableFuture<PrivateMine> createPrivateMine(OfflinePlayer owner, MinesSchematic schematic);
 
     /**
      * Deletes a private mine.
@@ -114,9 +116,10 @@ public interface PrivateMinesManager {
      * Starts pre-generating a specified number of private mines.
      *
      * @param sender the command sender
+     * @param schematic schematic to use
      * @param amount number of mines to pregen
      */
-    void pregen(CommandSender sender, int amount);
+    void pregen(CommandSender sender, MinesSchematic schematic, int amount);
 
     /**
      * Checks if a pregen operation is running.

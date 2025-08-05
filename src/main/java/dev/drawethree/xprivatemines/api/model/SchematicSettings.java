@@ -9,6 +9,13 @@ import java.util.Map;
 public interface SchematicSettings {
 
     /**
+     * Gets the permission required to create schematic
+     *
+     * @return required player permission
+     */
+    String getPermission();
+
+    /**
      * Gets the spawn point inside the schematic.
      *
      * @return spawn point
