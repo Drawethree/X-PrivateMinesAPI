@@ -83,6 +83,14 @@ public interface PrivateMine {
     boolean isOpen();
 
     /**
+     * Checks whether the mine is open to the specified player.
+     *
+     * @param player the {@link OfflinePlayer} to check access for
+     * @return {@code true} if the player is allowed to access the mine, {@code false} otherwise
+     */
+    boolean isOpenTo(OfflinePlayer player);
+
+    /**
      * Sets whether the mine is open to visitors.
      *
      * @param open true to open the mine
