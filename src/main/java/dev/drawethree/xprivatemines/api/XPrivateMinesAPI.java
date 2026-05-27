@@ -1,9 +1,13 @@
 package dev.drawethree.xprivatemines.api;
 
 
+import dev.drawethree.xprivatemines.api.addons.XPrivateMinesAddonInfo;
+import dev.drawethree.xprivatemines.api.economy.MineEconomyProvider;
 import dev.drawethree.xprivatemines.api.manager.MineTierManager;
 import dev.drawethree.xprivatemines.api.manager.PrivateMinesManager;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * Main API interface for interacting with the XPrivateMines plugin.
@@ -11,21 +15,57 @@ import org.jetbrains.annotations.NotNull;
 public interface XPrivateMinesAPI {
 
     /**
-     * Gets the AutoMiner module API.
+     * Gets the tier manager.
      *
-     * @return the AutoMiner API instance
+     * @return the MineTierManager instance
      */
     @NotNull
     MineTierManager getTierManager();
 
     /**
-     * Gets the AutoMiner module API.
+     * Gets the mines manager.
      *
-     * @return the AutoMiner API instance
+     * @return the PrivateMinesManager instance
      */
     @NotNull
     PrivateMinesManager getMinesManager();
 
+    /**
+     * Gets the economy provider that wraps whichever currency backend the plugin
+     * is configured to use (Vault, X-Prison, ExcellentEconomy, PlayerPoints).
+     * Use this to withdraw/deposit/format currency without depending on a specific economy plugin.
+     *
+     * @return the active MineEconomyProvider
+     */
+    @NotNull
+    MineEconomyProvider getEconomyProvider();
+
+
+    /** Returns metadata for all currently loaded addons. */
+    @NotNull
+    List<XPrivateMinesAddonInfo> getLoadedAddons();
+
+    /**
+     * Enables the addon with the given name (case-insensitive).
+     *
+     * @return true if the addon was found and enabled, false if not found
+     */
+    boolean enableAddon(@NotNull String name);
+
+    /**
+     * Disables the addon with the given name (case-insensitive).
+     *
+     * @return true if the addon was found and disabled, false if not found
+     */
+    boolean disableAddon(@NotNull String name);
+
+    /**
+     * Loads an addon JAR file from the {@code addons/} folder at runtime.
+     *
+     * @param filename just the filename, e.g. {@code "MyAddon.jar"}
+     * @return true if loaded successfully, false if already loaded or file not found
+     */
+    boolean loadAddonFromFile(@NotNull String filename);
 
     /**
      * Gets the singleton instance of the XPrivateMinesAPI.

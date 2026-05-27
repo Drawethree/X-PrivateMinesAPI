@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PrivateMine {
@@ -43,6 +45,27 @@ public interface PrivateMine {
      * @return true if banned
      */
     boolean isBanned(OfflinePlayer player);
+
+    /**
+     * Gets the list of players banned from this mine.
+     *
+     * @return list of banned OfflinePlayers
+     */
+    List<OfflinePlayer> getBannedPlayers();
+
+    /**
+     * Gets the set of UUIDs of players banned from this mine.
+     *
+     * @return set of banned player UUIDs
+     */
+    Set<UUID> getBannedPlayersUUID();
+
+    /**
+     * Sets the owner of this mine.
+     *
+     * @param newOwner the UUID of the new owner
+     */
+    void setOwner(UUID newOwner);
 
     /**
      * Teleports a player to the mine's spawn location.
@@ -194,4 +217,40 @@ public interface PrivateMine {
      * @param tier the new mine tier
      */
     void setTier(MineTier tier);
+
+    /**
+     * Gets the schematic this private mine was created from.
+     *
+     * @return the mine's schematic
+     */
+    MinesSchematic getSchematic();
+
+    /**
+     * Returns the spawn location players are teleported to when entering this mine.
+     *
+     * @return the mine's spawn location
+     */
+    Location getSpawnLocation();
+
+    /**
+     * Returns the current size of the mine's ore pit (base size + expand level).
+     *
+     * @return mine size in blocks
+     */
+    int getMineSize();
+
+    /**
+     * Returns a snapshot list of all players currently inside the ore region of this mine.
+     *
+     * @return list of players in the mine pit
+     */
+    List<Player> getPlayersInMine();
+
+    /**
+     * Returns a snapshot list of all players currently inside the full private mine region
+     * (includes the outer housing area, not just the ore pit).
+     *
+     * @return list of players in the private mine
+     */
+    List<Player> getPlayersInPrivateMine();
 }

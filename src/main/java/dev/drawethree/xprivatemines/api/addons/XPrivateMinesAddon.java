@@ -41,4 +41,13 @@ public interface XPrivateMinesAddon {
      * </p>
      */
     void onDisable();
+
+    /**
+     * Called when the plugin is reloaded via {@code /pmine reload}.
+     * <p>
+     * Override this to refresh any cached configuration or state that depends on
+     * plugin settings. The default implementation does nothing.
+     * </p>
+     */
+    default void onReload() {}
 }

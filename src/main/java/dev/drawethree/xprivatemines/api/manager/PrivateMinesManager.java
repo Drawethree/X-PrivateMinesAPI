@@ -1,5 +1,6 @@
 package dev.drawethree.xprivatemines.api.manager;
 
+import com.cryptomorin.xseries.XMaterial;
 import dev.drawethree.xprivatemines.api.model.MineTier;
 import dev.drawethree.xprivatemines.api.model.MinesSchematic;
 import dev.drawethree.xprivatemines.api.model.PrivateMine;
@@ -9,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface PrivateMinesManager {
@@ -39,6 +41,22 @@ public interface PrivateMinesManager {
     PrivateMine getPrivateMine(OfflinePlayer player);
 
     /**
+     * Looks up a private mine by its unique ID.
+     *
+     * @param mineUuid the UUID of the mine
+     * @return the private mine, or null if not found
+     */
+    PrivateMine getMineById(UUID mineUuid);
+
+    /**
+     * Looks up a private mine by its owner's UUID.
+     *
+     * @param ownerUuid the UUID of the owner
+     * @return the owner's private mine, or null if not found
+     */
+    PrivateMine getMineByOwner(UUID ownerUuid);
+
+    /**
      * Gets the private mine at a specific location.
      *
      * @param location the location to check
@@ -52,6 +70,20 @@ public interface PrivateMinesManager {
      * @return a collection of all private mines
      */
     Collection<PrivateMine> getAll();
+
+    /**
+     * Returns {@code true} once the async mine loading from disk has fully
+     * completed and all mines are registered in memory.
+     * Use this to distinguish "0 mines loaded" from "mines still loading".
+     */
+    boolean isMinesReady();
+
+    /**
+     * Gets all schematics currently registered.
+     *
+     * @return a collection of all available schematics
+     */
+    Collection<MinesSchematic> getAllSchematics();
 
     /**
      * Forces a mine to expand by a given amount.
@@ -134,6 +166,22 @@ public interface PrivateMinesManager {
     void stopPregen();
 
     /**
+     * Returns the number of mines successfully created so far in the current pregen run.
+     * Returns 0 if no pregen is running.
+     *
+     * @return mines completed so far
+     */
+    int getPregenCompleted();
+
+    /**
+     * Returns the total number of mines requested in the current pregen run.
+     * Returns 0 if no pregen is running.
+     *
+     * @return total mines requested
+     */
+    int getPregenTotal();
+
+    /**
      * Bans a player from a private mine.
      *
      * @param mine the mine
@@ -155,4 +203,53 @@ public interface PrivateMinesManager {
      * @param target the player to kick
      */
     void kickPlayer(Player target);
+
+    /**
+     * Reassigns an existing mine (typically unclaimed) to a new owner.
+     * Updates both the mine's owner field and the internal registry index.
+     *
+     * @param mine     the mine to reassign
+     * @param newOwner the new owner
+     */
+    void reassignMine(PrivateMine mine, OfflinePlayer newOwner);
+
+    /**
+     * Lets a player upgrade their own mine to the next tier, charging them the upgrade cost.
+     * Sends the appropriate success/failure messages to the player.
+     *
+     * @param mine   the mine to upgrade
+     * @param player the player paying for the upgrade
+     * @return {@code true} if the upgrade succeeded
+     */
+    boolean upgradeMine(PrivateMine mine, Player player);
+
+    /**
+     * Lets a player expand their own mine by one level, charging them the expand cost.
+     * Sends the appropriate success/failure messages to the player.
+     *
+     * @param mine   the mine to expand
+     * @param player the player paying for the expansion
+     * @return {@code true} if the expansion succeeded
+     */
+    boolean expandMine(PrivateMine mine, Player player);
+
+    /**
+     * Changes the block material of a mine and immediately refills it.
+     * Use {@code null} to revert to tier-based block composition.
+     *
+     * @param mine     the mine to update
+     * @param material the new block material, or {@code null} to use tier blocks
+     * @return {@code true} if the change was applied
+     */
+    boolean setBlock(PrivateMine mine, XMaterial material);
+
+    /**
+     * Changes the block material of a mine by material name and immediately refills it.
+     * Use {@code null} or blank string to revert to tier-based block composition.
+     *
+     * @param mine         the mine to update
+     * @param materialName the Bukkit material name (e.g. "DIAMOND_ORE"), or null/blank to clear
+     * @return {@code true} if the change was applied, {@code false} if the material name is unknown
+     */
+    boolean setBlock(PrivateMine mine, String materialName);
 }

@@ -16,6 +16,13 @@ public interface SchematicSettings {
     String getPermission();
 
     /**
+     * Returns whether this schematic uses bedrock walls around the mine region.
+     *
+     * @return true if bedrock walls are enabled
+     */
+    boolean isBedrockWalls();
+
+    /**
      * Gets the spawn point inside the schematic.
      *
      * @return spawn point

@@ -34,4 +34,12 @@ public interface MineTier {
      * @return map of block types and their weights
      */
     Map<XMaterial, Integer> getBlockWeights();
+
+    /**
+     * Gets the block distribution as a map of material name strings to their weights.
+     * Suitable for use in contexts where XMaterial is not available on the classpath.
+     *
+     * @return map of block material names and their weights
+     */
+    Map<String, Integer> getBlockWeightsAsStrings();
 }
