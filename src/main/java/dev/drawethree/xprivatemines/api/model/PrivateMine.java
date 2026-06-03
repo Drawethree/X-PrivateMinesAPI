@@ -253,4 +253,46 @@ public interface PrivateMine {
      * @return list of players in the private mine
      */
     List<Player> getPlayersInPrivateMine();
+
+    /**
+     * Gets the custom display name set by the mine owner, or null if none is set.
+     *
+     * @return the custom mine name, or null
+     */
+    String getMineName();
+
+    /**
+     * Sets a custom display name for this mine. Pass null to clear it.
+     *
+     * @param name the new custom name, or null to clear
+     */
+    void setMineName(String name);
+
+    /**
+     * Gets the MOTD (message of the day) shown to players when they enter this mine,
+     * or null if no MOTD is set.
+     *
+     * @return the mine MOTD, or null
+     */
+    String getMineMotd();
+
+    /**
+     * Sets the MOTD shown to players on mine entry. Pass null to clear it.
+     *
+     * @param motd the new MOTD, or null to clear
+     */
+    void setMineMotd(String motd);
+
+    /**
+     * Returns the mine's display name. If a custom name has been set via {@link #setMineName(String)},
+     * that name is returned; otherwise falls back to "{ownerName}'s Mine".
+     *
+     * @return the display name, never null
+     */
+    default String getDisplayName() {
+        String n = getMineName();
+        if (n != null && !n.isBlank()) return n;
+        OfflinePlayer o = getOfflineOwner();
+        return (o != null && o.getName() != null) ? o.getName() + "'s Mine" : "Unknown Mine";
+    }
 }
