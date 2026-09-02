@@ -2,6 +2,8 @@ package dev.drawethree.xprivatemines.api.manager;
 
 import com.cryptomorin.xseries.XMaterial;
 import dev.drawethree.xprivatemines.api.model.MineTier;
+import dev.drawethree.xprivatemines.api.model.block.MineBlockCatalogue;
+import dev.drawethree.xprivatemines.api.model.block.MineBlockRef;
 import dev.drawethree.xprivatemines.api.model.MinesSchematic;
 import dev.drawethree.xprivatemines.api.model.PrivateMine;
 import org.bukkit.Location;
@@ -9,6 +11,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -240,16 +246,125 @@ public interface PrivateMinesManager {
      * @param mine     the mine to update
      * @param material the new block material, or {@code null} to use tier blocks
      * @return {@code true} if the change was applied
+     * @deprecated since 1.4 &mdash; <b>not callable from an addon</b>. X-PrivateMines relocates
+     * XSeries when it shades this API, so the running plugin's parameter type differs from the one
+     * an addon links against and the call fails with {@code NoSuchMethodError}. It also cannot
+     * express a custom-block selection. Use {@link #setBlock(PrivateMine, String)} or
+     * {@link #setBlock(PrivateMine, MineBlockRef)}.
      */
+    @Deprecated
     boolean setBlock(PrivateMine mine, XMaterial material);
 
     /**
-     * Changes the block material of a mine by material name and immediately refills it.
-     * Use {@code null} or blank string to revert to tier-based block composition.
+     * Changes the block of a mine by id and immediately refills it.
+     * <p>
+     * {@code materialName} is a vanilla material name ({@code "DIAMOND_ORE"}) or a custom-block id
+     * ({@code "nexo:ruby_ore"}, {@code "oraxen:ruby_ore"}, {@code "myns:ruby"}) &mdash; the same
+     * string {@link MineBlockRef#getId()} returns. Unknown ids are rejected and the mine is left
+     * untouched; validate up front with {@link MineBlockCatalogue#isValidBlockId(String)} if you
+     * need to tell "unknown block" apart from "not a private mine".
+     * <p>
+     * Passing {@code null} or a blank string reverts to the tier's composition; prefer the explicit
+     * {@link #clearBlock(PrivateMine)}.
+     * <p>
+     * <b>Main thread only</b> &mdash; it triggers a refill.
      *
      * @param mine         the mine to update
-     * @param materialName the Bukkit material name (e.g. "DIAMOND_ORE"), or null/blank to clear
-     * @return {@code true} if the change was applied, {@code false} if the material name is unknown
+     * @param materialName the block id, or null/blank to clear
+     * @return {@code true} if the change was applied, {@code false} if the id is unknown
      */
     boolean setBlock(PrivateMine mine, String materialName);
+
+    /**
+     * Typed form of {@link #setBlock(PrivateMine, String)}; equivalent to passing
+     * {@code block.getId()}. Main thread only.
+     *
+     * @param mine  the mine to update
+     * @param block the new block, or {@code null} to revert to the tier's composition
+     * @return {@code true} if the change was applied
+     * @since 1.4
+     */
+    default boolean setBlock(@NotNull PrivateMine mine, @Nullable MineBlockRef block) {
+        return setBlock(mine, block == null ? null : block.getId());
+    }
+
+    /**
+     * Clears the mine's single-block override so it refills from its tier's composition again.
+     * Main thread only.
+     *
+     * @param mine the mine to update
+     * @return {@code true} if the change was applied
+     * @since 1.4
+     */
+    default boolean clearBlock(@NotNull PrivateMine mine) {
+        throw new UnsupportedOperationException("clearBlock requires X-PrivateMines built against API 1.4");
+    }
+
+    /**
+     * Removes real blocks left standing inside a mine's mining area and re-prepares it &mdash; the
+     * operation behind {@code /pmine fixblocks}.
+     * <p>
+     * In packet-mine mode a real block inside the region (schematic terrain that a growing region
+     * swallowed, or a mine created before packet mode was enabled) is resolved as itself by
+     * anything reading the world, which is how plot floors end up in autosell. This re-runs the
+     * interior clear and bedrock shell for the region as it currently stands. In real-block mode it
+     * is a plain refill.
+     * <p>
+     * <b>Main thread only.</b> The work is asynchronous and throttled: this returns before the
+     * clean has finished, and the mine is unmineable until it does. Safe to run on a live mine.
+     *
+     * @param mine the mine to clean
+     * @since 1.4
+     */
+    default void cleanRealBlocks(@NotNull PrivateMine mine) {
+        throw new UnsupportedOperationException("cleanRealBlocks requires X-PrivateMines built against API 1.4");
+    }
+
+    /**
+     * Rebuilds the schematic registry from disk &mdash; the {@code schematics/} folder plus
+     * schematic-settings.yml &mdash; as {@code /pmine reload} does.
+     * <p>
+     * Existing mines keep running; only the templates used for new mines are refreshed.
+     * Main thread only.
+     *
+     * @since 1.4
+     */
+    default void reloadSchematics() {
+        throw new UnsupportedOperationException("reloadSchematics requires X-PrivateMines built against API 1.4");
+    }
+
+    /**
+     * The schematic used when a mine is created without an explicit one.
+     *
+     * @return the default schematic, or {@code null} if no schematics are loaded
+     * @since 1.4
+     */
+    @Nullable
+    default MinesSchematic getDefaultSchematic() {
+        return null;
+    }
+
+    /**
+     * Looks up a schematic by name &mdash; the file name without its extension.
+     *
+     * @param name the schematic name
+     * @return the schematic, or {@code null} if none is registered under that name
+     * @since 1.4
+     */
+    @Nullable
+    default MinesSchematic getSchematicByName(@NotNull String name) {
+        return null;
+    }
+
+    /**
+     * The cost to upgrade this mine to the next tier, as an exact decimal.
+     *
+     * @param mine the mine to price
+     * @return the next upgrade cost, never null
+     * @since 1.4
+     */
+    @NotNull
+    default BigDecimal getNextUpgradeCostExact(@NotNull PrivateMine mine) {
+        return BigDecimal.valueOf(getNextUpgradeCost(mine));
+    }
 }

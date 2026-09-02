@@ -295,4 +295,67 @@ public interface PrivateMine {
         OfflinePlayer o = getOfflineOwner();
         return (o != null && o.getName() != null) ? o.getName() + "'s Mine" : "Unknown Mine";
     }
+
+    /**
+     * Whether this mine automatically buys the next expand level as it progresses.
+     * <p>
+     * This is the mine-level toggle; the server-wide kill switch is {@code auto-expand.enabled} in
+     * config.yml, so an auto-expand only happens when both are on. Persisted as
+     * {@code auto-expand} in mines.yml.
+     *
+     * @return {@code true} if auto-expand is enabled for this mine
+     * @since 1.4
+     */
+    default boolean isAutoExpand() {
+        return false;
+    }
+
+    /**
+     * Sets the mine-level auto-expand toggle. The change is persisted by the plugin's autosave and
+     * takes effect on the next auto-progress check; it does not expand the mine immediately.
+     *
+     * @param autoExpand the new value
+     * @since 1.4
+     */
+    default void setAutoExpand(boolean autoExpand) {
+        throw new UnsupportedOperationException("setAutoExpand requires X-PrivateMines built against API 1.4");
+    }
+
+    /**
+     * Whether this mine automatically buys the next tier as it progresses.
+     * <p>
+     * Gated server-wide by {@code auto-upgrade.enabled} in config.yml. Persisted as
+     * {@code auto-upgrade} in mines.yml.
+     *
+     * @return {@code true} if auto-upgrade is enabled for this mine
+     * @since 1.4
+     */
+    default boolean isAutoUpgrade() {
+        return false;
+    }
+
+    /**
+     * Sets the mine-level auto-upgrade toggle. The change is persisted by the plugin's autosave and
+     * takes effect on the next auto-progress check.
+     *
+     * @param autoUpgrade the new value
+     * @since 1.4
+     */
+    default void setAutoUpgrade(boolean autoUpgrade) {
+        throw new UnsupportedOperationException("setAutoUpgrade requires X-PrivateMines built against API 1.4");
+    }
+
+    /**
+     * The unclaimed tax earnings held by this mine, as an exact decimal.
+     * <p>
+     * Prefer this over {@link #getUnclaimedMoney()} when displaying a balance or combining it
+     * arithmetically: prison economies routinely exceed {@code double} precision, and this is the
+     * signature that survives a future migration of the backing field.
+     *
+     * @return the unclaimed earnings, never null
+     * @since 1.4
+     */
+    default java.math.BigDecimal getUnclaimedMoneyExact() {
+        return java.math.BigDecimal.valueOf(getUnclaimedMoney());
+    }
 }
