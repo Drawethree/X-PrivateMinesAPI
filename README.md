@@ -5,7 +5,7 @@ Official API for X-PrivateMines plugin.
 - [SpigotMC (Download)](https://www.spigotmc.org/resources/126985/)
 - [Discord (Support)](https://discord.gg/ZeSkmEC6mG)
 - [Wiki (Documentation)](https://github.com/Drawethree/X-PrivateMines/wiki)
-- [Javadocs](https://www.drawethree.dev/plugins/x-privatemines/javadoc/index.html)
+- [Javadocs](https://javadocs.drawethree.dev/x-privatemines/)
 ## Dependency
 
 Artifacts are published to [repo.drawethree.dev](https://repo.drawethree.dev). Every build,
