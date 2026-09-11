@@ -27,7 +27,7 @@ This file only records what is specific to XPrivateMinesAPI.
 
 ## Publishing
 
-**A snapshot** — push to `master`. Deploys `1.4-SNAPSHOT` to `/snapshots` and adds a row to the
+**A snapshot** — push to `master`. Deploys `1.5-SNAPSHOT` to `/snapshots` and adds a row to the
 build listing.
 
 **A release** — tag it:
